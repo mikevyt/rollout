@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -9,10 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var db *mongo.Database
+type DB struct {
+	mongo.Database
+}
+
+var db DB
 
 // InitDB initializes the database
-func InitDB(dburi string) error {
+func StartDB(dburi string) error {
 	ctx, cancel := context.WithTimeout(context.TODO(), 10*time.Second)
 	defer cancel()
 
@@ -22,16 +27,15 @@ func InitDB(dburi string) error {
 		return err
 	}
 
-	db = client.Database("rollout")
+	rollout := client.Database("rollout")
+	db = DB{*rollout}
 
 	return nil
 }
 
-// CreateUser creates new User
-func CreateUser(user *User) (err error) {
-	_, err = db.Collection("users").InsertOne(context.TODO(), &user)
-	if err != nil {
-		return err
+func GetDB() (*DB, error) {
+	if db == (DB{}) {
+		return nil, errors.New("Database not initialized.")
 	}
-	return nil
+	return &db, nil
 }

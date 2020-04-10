@@ -17,9 +17,9 @@ type Routes []Route
 
 var routes = Routes{
 	Route{
-		"UsersIndex",
-		"GET",
+		"PostUsers",
+		"POST",
 		"/user",
-		h.UsersIndex,
+		h.PostUser,
 	},
 }

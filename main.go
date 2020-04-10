@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	err := m.InitDB("mongodb://localhost:27017")
+	err := m.StartDB("mongodb://localhost:27017")
 	if err != nil {
 		log.Fatal(err)
 	}

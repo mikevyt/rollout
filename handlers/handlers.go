@@ -1,23 +1,35 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 
-	m "github.com/mikevyt/rollout/models"
+	"github.com/mikevyt/rollout/models"
 )
 
-// UsersIndex GETs all Users
-func UsersIndex(w http.ResponseWriter, r *http.Request) {
-	user := m.User{Username: "donkykong"}
-	m.CreateUser(&user)
-	// users := m.Users{
-	// 	m.User{ID: 1},
-	// 	m.User{ID: 2},
-	// }
+type PostUserRequest struct {
+	Username string
+}
 
-	// w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	// w.WriteHeader(http.StatusOK)
-	// if err := json.NewEncoder(w).Encode(users); err != nil {
-	// 	panic(err)
-	// }
+func PostUser(w http.ResponseWriter, r *http.Request) {
+	var request PostUserRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		panic(err)
+	}
+
+	user := models.NewUser(request.Username)
+
+	db, err := models.GetDB()
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.CreateUser(user)
+	if err != nil {
+		panic(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
 }
