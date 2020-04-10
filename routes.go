@@ -17,9 +17,27 @@ type Routes []Route
 
 var routes = Routes{
 	Route{
-		"PostUsers",
+		"GetUsers",
+		"GET",
+		"/user",
+		h.GetUsers,
+	},
+	Route{
+		"GetUser",
+		"GET",
+		"/user/{discordid}",
+		h.GetUser,
+	},
+	Route{
+		"PostUser",
 		"POST",
 		"/user",
 		h.PostUser,
+	},
+	Route{
+		"DeleteUser",
+		"DELETE",
+		"/user/{discordid}",
+		h.DeleteUser,
 	},
 }
