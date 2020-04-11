@@ -6,11 +6,18 @@ import (
 	"net/http"
 	"os"
 
-	m "github.com/mikevyt/rollout/models"
+	"github.com/joho/godotenv"
+	"github.com/mikevyt/rollout/models"
 )
 
 func main() {
-	err := m.StartDB("mongodb://localhost:27017")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	dbURL := os.Getenv("DB_URL")
+	err = models.StartDB(dbURL)
 	if err != nil {
 		log.Fatal(err)
 	}

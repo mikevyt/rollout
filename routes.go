@@ -17,6 +17,18 @@ type Routes []Route
 
 var routes = Routes{
 	Route{
+		"DiscordRedirect",
+		"GET",
+		"/",
+		h.DiscordRedirect,
+	},
+	Route{
+		"Login",
+		"GET",
+		"/login",
+		h.Login,
+	},
+	Route{
 		"GetUsers",
 		"GET",
 		"/user",
