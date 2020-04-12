@@ -8,24 +8,36 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// DiscordUser Model
+type DiscordUser struct {
+	ID            string `json:"id"`
+	Username      string `json:"username"`
+	Email         string `json:"email"`
+	Avatar        string `json:"avatar"`
+	Discriminator string `json:"discriminator"`
+	PublicFlags   int64  `json:"public_flags"`
+	Flags         int64  `json:"flags"`
+	Locale        string `json:"locale"`
+	MFAEnabled    bool   `json:"mfa_enabled"`
+}
+
 // User Model
 type User struct {
-	DiscordID       int64     `json:"discordId"`
-	DiscordUsername string    `json:"discordUserName"`
-	CreatedAt       time.Time `json:"createdAt"`
-	UpdatedAt       time.Time `json:"updatedAt"`
-	IsDeleted       bool      `json:"isDeleted"`
+	DiscordUser
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	IsDeleted bool      `json:"isDeleted"`
 }
 
 // Users Model
 type Users []User
 
-func NewUser(discordid int64, discordusername string) *User {
+// NewUser creates new user
+func NewUser(discordUserData DiscordUser) *User {
 	user := User{
-		DiscordID:       discordid,
-		DiscordUsername: discordusername,
-		CreatedAt:       time.Now(),
-		UpdatedAt:       time.Now(),
+		DiscordUser: discordUserData,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
 	return &user
 }

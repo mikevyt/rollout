@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/mikevyt/rollout/models"
 )
 
 const authorizeURL = "https://discordapp.com/api/oauth2/authorize"
@@ -76,21 +78,8 @@ func GetAccessToken(code string) string {
 	return getAccessTokenResponse.AccessToken
 }
 
-// DiscordUserData contains response from Discord
-type DiscordUserData struct {
-	ID            string `json:"id"`
-	Username      string `json:"username"`
-	Email         string `json:"email"`
-	Avatar        string `json:"avatar"`
-	Discriminator string `json:"discriminator"`
-	PublicFlags   int64  `json:"public_flags"`
-	Flags         int64  `json:"flags"`
-	Locale        string `json:"locale"`
-	MFAEnabled    bool   `json:"mfa_enabled"`
-}
-
 // GetUserData gets user data from Discord
-func GetUserData(accesstoken string) DiscordUserData {
+func GetUserData(accesstoken string) models.DiscordUser {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", userDataURL, nil)
 	if err != nil {
@@ -104,7 +93,7 @@ func GetUserData(accesstoken string) DiscordUserData {
 	}
 	defer resp.Body.Close()
 
-	discordUserData := DiscordUserData{}
+	discordUserData := models.DiscordUser{}
 
 	err = json.NewDecoder(resp.Body).Decode(&discordUserData)
 

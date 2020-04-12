@@ -38,12 +38,12 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	discordid, err := strconv.ParseInt(vars["discordid"], 10, 64)
+	discordID, err := strconv.ParseInt(vars["discordid"], 10, 64)
 	if err != nil {
 		panic(err)
 	}
 
-	filter := bson.D{primitive.E{Key: "discordid", Value: discordid}}
+	filter := bson.D{primitive.E{Key: "discordid", Value: discordID}}
 	user, err := db.ReadUser(filter)
 	if err != nil {
 		panic(err)
@@ -62,26 +62,26 @@ type PostUserRequest struct {
 
 // PostUser POSTs a new User
 func PostUser(w http.ResponseWriter, r *http.Request) {
-	var request PostUserRequest
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		panic(err)
-	}
+	// var request PostUserRequest
+	// err := json.NewDecoder(r.Body).Decode(&request)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	user := models.NewUser(request.DiscordID, request.DiscordUsername)
+	// user := models.NewUser(request.DiscordID, request.DiscordUsername)
 
-	db, err := models.GetDB()
-	if err != nil {
-		panic(err)
-	}
+	// db, err := models.GetDB()
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	err = db.CreateUser(user)
-	if err != nil {
-		panic(err)
-	}
+	// err = db.CreateUser(user)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	// w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	// w.WriteHeader(http.StatusOK)
 }
 
 // PutUserRequest defines an update User request
@@ -98,12 +98,12 @@ func PutUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	discordid, err := strconv.ParseInt(vars["discordid"], 10, 64)
+	discordID, err := strconv.ParseInt(vars["discordid"], 10, 64)
 	if err != nil {
 		panic(err)
 	}
 
-	filter := bson.D{primitive.E{Key: "discordid", Value: discordid}}
+	filter := bson.D{primitive.E{Key: "discordid", Value: discordID}}
 	update := bson.D{primitive.E{
 		Key: "$set",
 		Value: bson.D{
@@ -126,12 +126,12 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	discordid, err := strconv.ParseInt(vars["discordid"], 10, 64)
+	discordID, err := strconv.ParseInt(vars["discordid"], 10, 64)
 	if err != nil {
 		panic(err)
 	}
 
-	filter := bson.D{primitive.E{Key: "discordid", Value: discordid}}
+	filter := bson.D{primitive.E{Key: "discordid", Value: discordID}}
 	update := bson.D{primitive.E{
 		Key: "$set",
 		Value: bson.D{

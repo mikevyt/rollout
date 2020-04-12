@@ -6,12 +6,13 @@ import (
 	"net/http"
 
 	"github.com/mikevyt/rollout/auth"
+	"github.com/mikevyt/rollout/models"
 )
 
 // DiscordRedirect redirects to Discord's Auth Page
 func DiscordRedirect(w http.ResponseWriter, r *http.Request) {
-	discordlogin := auth.GetDiscordAuthURL()
-	http.Redirect(w, r, discordlogin, http.StatusSeeOther)
+	discordLogin := auth.GetDiscordAuthURL()
+	http.Redirect(w, r, discordLogin, http.StatusSeeOther)
 }
 
 // Login handles retrieving user information from Discord
@@ -22,10 +23,27 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		panic(errors.New("No 'code' in query parameters"))
 	}
 
-	accesstoken := auth.GetAccessToken(code)
-	discordUserData := auth.GetUserData(accesstoken)
+	accessToken := auth.GetAccessToken(code)
+	discordUserData := auth.GetUserData(accessToken)
 
-	if err := json.NewEncoder(w).Encode(&discordUserData); err != nil {
+	db, err := models.GetDB()
+	if err != nil {
 		panic(err)
+	}
+
+	if true { // new user
+		user := models.NewUser(discordUserData)
+
+		err = db.CreateUser(user)
+
+		if err != nil {
+			panic(err)
+		}
+
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(&user); err != nil {
+			panic(err)
+		}
 	}
 }
