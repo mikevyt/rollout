@@ -41,12 +41,6 @@ var routes = Routes{
 		h.GetUser,
 	},
 	Route{
-		"PostUser",
-		"POST",
-		"/user",
-		h.PostUser,
-	},
-	Route{
 		"DeleteUser",
 		"DELETE",
 		"/user/{discordid}",

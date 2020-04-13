@@ -38,12 +38,18 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	discordID, err := strconv.ParseInt(vars["discordid"], 10, 64)
+	// TODO: Fix types of id and discriminator
+	discordID := vars["discordid"]
 	if err != nil {
 		panic(err)
 	}
 
-	filter := bson.D{primitive.E{Key: "discordid", Value: discordID}}
+	filter := bson.D{
+		primitive.E{
+			Key:   "discorduser.id",
+			Value: discordID,
+		},
+	}
 	user, err := db.ReadUser(filter)
 	if err != nil {
 		panic(err)
@@ -52,36 +58,6 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(user); err != nil {
 		panic(err)
 	}
-}
-
-// PostUserRequest defines a new User request
-type PostUserRequest struct {
-	DiscordID       int64
-	DiscordUsername string
-}
-
-// PostUser POSTs a new User
-func PostUser(w http.ResponseWriter, r *http.Request) {
-	// var request PostUserRequest
-	// err := json.NewDecoder(r.Body).Decode(&request)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// user := models.NewUser(request.DiscordID, request.DiscordUsername)
-
-	// db, err := models.GetDB()
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// err = db.CreateUser(user)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	// w.WriteHeader(http.StatusOK)
 }
 
 // PutUserRequest defines an update User request
