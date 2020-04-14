@@ -42,10 +42,7 @@ func NewUser(discordUserData DiscordUser) *User {
 	return &user
 }
 
-func (u *User) SetUpdatedAt() {
-	u.CreatedAt = time.Now()
-}
-
+// CreateUser adds User to database
 func (db *DB) CreateUser(user *User) (err error) {
 	_, err = db.Collection("users").InsertOne(context.TODO(), &user)
 	if err != nil {
@@ -54,6 +51,7 @@ func (db *DB) CreateUser(user *User) (err error) {
 	return nil
 }
 
+// ReadUser reads User from database
 func (db *DB) ReadUser(filter bson.D) (*Users, error) {
 	cur, err := db.Collection("users").Find(context.TODO(), filter)
 	if err != nil {
@@ -74,6 +72,7 @@ func (db *DB) ReadUser(filter bson.D) (*Users, error) {
 	return &users, nil
 }
 
+// UpdateUser updates User in database
 func (db *DB) UpdateUser(filter bson.D, update bson.D) error {
 	_, err := db.Collection("users").UpdateOne(context.TODO(), filter, update)
 

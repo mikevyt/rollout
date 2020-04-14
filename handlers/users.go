@@ -3,10 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/mikevyt/rollout/filters"
 	"github.com/mikevyt/rollout/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -44,12 +44,8 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	filter := bson.D{
-		primitive.E{
-			Key:   "discorduser.id",
-			Value: discordID,
-		},
-	}
+	filter := filters.GetUserByDiscordID(discordID)
+
 	user, err := db.ReadUser(filter)
 	if err != nil {
 		panic(err)
@@ -74,12 +70,12 @@ func PutUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	discordID, err := strconv.ParseInt(vars["discordid"], 10, 64)
+	discordID := vars["discordid"]
 	if err != nil {
 		panic(err)
 	}
 
-	filter := bson.D{primitive.E{Key: "discordid", Value: discordID}}
+	filter := filters.GetUserByDiscordID(discordID)
 	update := bson.D{primitive.E{
 		Key: "$set",
 		Value: bson.D{
@@ -102,12 +98,12 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	discordID, err := strconv.ParseInt(vars["discordid"], 10, 64)
+	discordID := vars["discordid"]
 	if err != nil {
 		panic(err)
 	}
 
-	filter := bson.D{primitive.E{Key: "discordid", Value: discordID}}
+	filter := filters.GetUserByDiscordID(discordID)
 	update := bson.D{primitive.E{
 		Key: "$set",
 		Value: bson.D{

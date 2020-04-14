@@ -37,6 +37,7 @@ func GetDiscordAuthURL() string {
 	return authURL.String()
 }
 
+// getAccessTokenResponse represents the access token response from Discord
 type getAccessTokenResponse struct {
 	AccessToken  string `json:"access_token"`
 	ExpiresIn    int64  `json:"expires_in"`

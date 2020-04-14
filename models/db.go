@@ -10,13 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// DB contains a MongoDB instance
 type DB struct {
 	mongo.Database
 }
 
 var db DB
 
-// InitDB initializes the database
+// StartDB initializes the MongoDB database
 func StartDB(dburi string) error {
 	ctx, cancel := context.WithTimeout(context.TODO(), 10*time.Second)
 	defer cancel()
@@ -33,9 +34,10 @@ func StartDB(dburi string) error {
 	return nil
 }
 
+// GetDB gets instance of Mongo database
 func GetDB() (*DB, error) {
 	if db == (DB{}) {
-		return nil, errors.New("Database not initialized.")
+		return nil, errors.New("database not initialized")
 	}
 	return &db, nil
 }
