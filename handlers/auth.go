@@ -35,12 +35,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	filter := filters.GetUserByDiscordID(discordUserData.ID)
 
-	// TODO: fix user *Users
 	user, err := db.ReadUser(filter)
 
-	if *user == nil {
+	if user == nil {
 		fmt.Println("new user")
-		user := models.NewUser(discordUserData)
+		user = models.NewUser(discordUserData)
 
 		err = db.CreateUser(user)
 
@@ -53,8 +52,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(&user); err != nil {
 			panic(err)
 		}
-	} else {
-		// TODO: Implement validation of account
-		fmt.Println("returning user")
+	} else if user.DiscordUser != discordUserData {
+		fmt.Println("update user")
+		user.DiscordUser = discordUserData
+		update := filters.UpdateUser(discordUserData)
+		err = db.UpdateUser(filter, update)
+	}
+
+	if err := json.NewEncoder(w).Encode(accessToken); err != nil {
+		panic(err)
 	}
 }

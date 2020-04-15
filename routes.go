@@ -26,7 +26,7 @@ var routes = Routes{
 	},
 	Route{
 		"Login",
-		"POST",
+		"GET",
 		"/login",
 		handlers.Login,
 	},

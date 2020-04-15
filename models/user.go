@@ -52,7 +52,7 @@ func (db *DB) CreateUser(user *User) (err error) {
 }
 
 // ReadUser reads User from database
-func (db *DB) ReadUser(filter bson.D) (*Users, error) {
+func (db *DB) ReadUser(filter bson.D) (*User, error) {
 	cur, err := db.Collection("users").Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func (db *DB) ReadUser(filter bson.D) (*Users, error) {
 		users = append(users, user)
 	}
 
-	return &users, nil
+	return &users[0], nil // TODO: fix this
 }
 
 // UpdateUser updates User in database
