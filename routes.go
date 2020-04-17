@@ -19,16 +19,22 @@ type Routes []Route
 
 var routes = Routes{
 	Route{
-		"DiscordOauth",
+		"DiscordCallback",
 		"GET",
-		"/oauth2",
-		handlers.DiscordOauth,
+		"/auth/{provider}/callback",
+		handlers.DiscordCallback,
 	},
 	Route{
-		"Login",
+		"Logout",
 		"GET",
-		"/login",
-		handlers.Login,
+		"/logout/{provider}",
+		handlers.Logout,
+	},
+	Route{
+		"Authenticate",
+		"GET",
+		"/auth/{provider}",
+		handlers.Authenticate,
 	},
 	Route{
 		"GetUsers",

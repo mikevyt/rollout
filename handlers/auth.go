@@ -2,64 +2,56 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
-	"github.com/mikevyt/rollout/auth"
-	"github.com/mikevyt/rollout/filters"
+	"github.com/markbates/goth/gothic"
 	"github.com/mikevyt/rollout/models"
+	"github.com/mitchellh/mapstructure"
 )
 
-// DiscordOauth redirects to Discord's Auth Page
-func DiscordOauth(w http.ResponseWriter, r *http.Request) {
-	discordLogin := auth.GetDiscordAuthURL()
-	http.Redirect(w, r, discordLogin, http.StatusSeeOther)
-}
+// DiscordCallback handles retrieving user information from Discord
+func DiscordCallback(w http.ResponseWriter, r *http.Request) {
+	userResponse, err := gothic.CompleteUserAuth(w, r)
 
-// Login handles retrieving user information from Discord
-// TODO: Improve Error handling here
-func Login(w http.ResponseWriter, r *http.Request) {
-	code := r.URL.Query().Get("code")
-	if code == "" {
-		panic(errors.New("No 'code' in query parameters"))
+	if err != nil {
+		fmt.Fprintln(w, err)
+		return
 	}
 
-	accessToken := auth.GetAccessToken(code)
-	discordUserData := auth.GetUserData(accessToken)
+	discordUser := models.DiscordUser{}
+	mapstructure.Decode(userResponse.RawData, &discordUser)
 
 	db, err := models.GetDB()
 	if err != nil {
 		panic(err)
 	}
 
-	filter := filters.GetUserByDiscordID(discordUserData.ID)
+	user := models.NewUser(discordUser)
+	err = db.CreateUser(user)
 
-	user, err := db.ReadUser(filter)
-
-	if user == nil {
-		fmt.Println("new user")
-		user = models.NewUser(discordUserData)
-
-		err = db.CreateUser(user)
-
-		if err != nil {
-			panic(err)
-		}
-
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(&user); err != nil {
-			panic(err)
-		}
-	} else if user.DiscordUser != discordUserData {
-		fmt.Println("update user")
-		user.DiscordUser = discordUserData
-		update := filters.UpdateUser(discordUserData)
-		err = db.UpdateUser(filter, update)
-	}
-
-	if err := json.NewEncoder(w).Encode(accessToken); err != nil {
+	if err := json.NewEncoder(w).Encode(discordUser); err != nil {
 		panic(err)
 	}
+}
+
+// Authenticate is the entry point for authenticating with Discord
+func Authenticate(w http.ResponseWriter, r *http.Request) {
+	gothUser, err := gothic.CompleteUserAuth(w, r)
+	fmt.Println(gothUser)
+	if err == nil {
+		fmt.Println("User found")
+		if err := json.NewEncoder(w).Encode(gothUser); err != nil {
+			panic(err)
+		}
+	} else {
+		fmt.Println("Beginning Auth Handler")
+		gothic.BeginAuthHandler(w, r)
+	}
+}
+
+// Logout logs out the user
+func Logout(w http.ResponseWriter, r *http.Request) {
+	gothic.Logout(w, r)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
